@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const period = urlParams.has('period') ? urlParams.get('period') : 'hour';
   const earthquakes = await fetchEarthquakes(period, type);
 
-  console.log(earthquakes);
   // Fjarlægjum loading skilaboð eftir að við höfum sótt gögn
   const loading = document.querySelector('.loading');
   const parent = loading.parentNode;
