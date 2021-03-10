@@ -1,33 +1,17 @@
+/* eslint-disable no-undef */
 import { fetchEarthquakes } from './lib/earthquakes';
 import { el, element, formatDate } from './lib/utils';
 import { init, createPopup } from './lib/map';
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // TODO
-  // Bæta við virkni til að sækja úr lista
-  // Nota proxy
-  // Hreinsa header og upplýsingar þegar ný gögn eru sótt
-  // Sterkur leikur að refactora úr virkni fyrir event handler í sér fall
-
-  const earthquakes = await fetchEarthquakes();
-
-  // Fjarlægjum loading skilaboð eftir að við höfum sótt gögn
-  const loading = document.querySelector('.loading');
-  const parent = loading.parentNode;
-  parent.removeChild(loading);
-
-  if (!earthquakes) {
-    parent.appendChild(
-      el('p', 'Villa við að sækja gögn'),
-    );
-  }
-
+function displayEarthquakes(earthquakes, type, period) {
   const ul = document.querySelector('.earthquakes');
+  const h1 = document.querySelector('.type');
+  const cache = document.querySelector('.cache');
   const map = document.querySelector('.map');
-
   init(map);
-
-  earthquakes.forEach((quake) => {
+  const cachedEarthquakes = earthquakes.info.cached ? 'Gögn eru í cache.' : 'Gögn eru ekki í cache.';
+  const elapsedTime = earthquakes.info.elapsed;
+  earthquakes.data.features.forEach((quake) => {
     const {
       title, mag, time, url,
     } = quake.properties;
@@ -61,6 +45,31 @@ document.addEventListener('DOMContentLoaded', async () => {
           link)),
     );
 
+    h1.innerHTML = `${type}, ${period.toLowerCase()}`;
+    cache.innerHTML = `${cachedEarthquakes} Fyrirspurn tók ${elapsedTime} sek.`;
     ul.appendChild(li);
   });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const queryString = window.location.search;
+  const queryType = document.querySelectorAll(`a[href='/${window.location.search}'`);
+  const urlParams = new URLSearchParams(queryString);
+  const type = urlParams.has('type') ? urlParams.get('type') : 'all';
+  const period = urlParams.has('period') ? urlParams.get('period') : 'hour';
+  const earthquakes = await fetchEarthquakes(period, type);
+
+  console.log(earthquakes);
+  // Fjarlægjum loading skilaboð eftir að við höfum sótt gögn
+  const loading = document.querySelector('.loading');
+  const parent = loading.parentNode;
+  parent.removeChild(loading);
+  console.info(earthquakes.data.features.length);
+  if (earthquakes.data.features.length <= 0) {
+    parent.appendChild(
+      el('p', 'Engir jarðskjálftar fundnir'),
+    );
+  } else {
+    displayEarthquakes(earthquakes, queryType[0].innerHTML, queryType[0].name);
+  }
 });

@@ -2,6 +2,10 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
+  env: {
+    node: true,
+    es6: true,
+  },
   parserOptions: {
     ecmaVersion: 12,
   },
@@ -19,8 +23,5 @@ module.exports = {
     // Leyfum console.info, warn og error
     'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
 
-    'no-restricted-syntax': 0,
-    'guard-for-in': 0,
-    'no-continue': 0,
   },
 };
