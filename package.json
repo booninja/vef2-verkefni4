@@ -1,5 +1,5 @@
 {
-  "name": "vef2-2021-v4-synilausn",
+  "name": "vef2-v4-vav18",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
     "dev": "concurrently npm:nodemon npm:browser-sync npm:rollup-watch",
     "start": "node ./src/app.js",
     "build": "concurrently npm:rollup",
-    "test": "eslint *.js **/*.js --fix"
+    "test": "eslint *.js src/*.js client/index.js --fix"
   },
   "keywords": [],
   "author": "",
