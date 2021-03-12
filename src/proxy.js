@@ -2,7 +2,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 
-// import { getEarthquakes, setEarthquakes } from './cache.js';
+import { getEarthquakes, setEarthquakes } from './cache.js';
 import { timerEnd, timerStart } from './time.js';
 
 export const router = express.Router();
@@ -17,24 +17,24 @@ router.get('/proxy', async (req, res) => {
   const start = timerStart();
   // TODO skoða fyrst cachið
 
-  // try {
-  //   result = await getEarthquakes(`${period}_${type}`);
-  //   // console.info(result);
-  // } catch (e) {
-  //   console.error('Villa við að ná gögn úr cache', e);
-  // }
-  // let end = timerEnd(start);
-  // if (result) {
-  //   const data = {
-  //     data: JSON.parse(result),
-  //     info: {
-  //       cached: true,
-  //       elapsed: end,
-  //     },
-  //   };
-  //   res.json(data);
-  //   return;
-  // }
+  try {
+    result = await getEarthquakes(`${period}_${type}`);
+    // console.info(result);
+  } catch (e) {
+    console.error('Villa við að ná gögn úr cache', e);
+  }
+  let end = timerEnd(start);
+  if (result) {
+    const data = {
+      data: JSON.parse(result),
+      info: {
+        cached: true,
+        elapsed: end,
+      },
+    };
+    res.json(data);
+    return;
+  }
 
   try {
     result = await fetch(URL);
@@ -53,9 +53,9 @@ router.get('/proxy', async (req, res) => {
 
   // TODO setja gögn í cache
   const cacheResults = await result.text();
-  // await setEarthquakes(`${period}_${type}`, cacheResults);
+  await setEarthquakes(`${period}_${type}`, cacheResults);
 
-  const end = timerEnd(start);
+  end = timerEnd(start);
   const cachedData = {
     data: JSON.parse(cacheResults),
     info: {
